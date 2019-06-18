@@ -1,0 +1,68 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Om Sairam!</title>
+    <link rel="stylesheet" href="css/album.css">
+    <link href="css/lightbox.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+
+</head>
+
+<body style="background-color:rgb(22, 59, 56)">
+       
+        <div class="container">
+            <div class="row">
+                <div class="col-4@sm col-3@md"> &nbsp; </div>
+            </div>
+        </div>
+        <div class="container" style="background-color:#e95702">
+            <div class="row">
+                <div id="navbar" class="navbar-collapse collapse">
+        
+        
+                    <a href="#" style="font-weight: 500; font-family:Geneva, Tahoma, sans-serif; color: #1207c2"><h1>The True Sai Works.</h1></a>
+        
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+       
+
+        <div class="container" style="background-color: goldenrod; border:wheat; border-style: solid; border-width: thick;">
+            <div class="row">
+                    <div>
+                            <div class="btn-group">
+                              <button class="btn1" id="prepend" onclick="location.href = 'album.html';">Home</button>
+                              <button class="btn1 active" id="append">Sai Charitra</button>
+                              <button class="btn1" id="remove" onclick="location.href = 'aboutshirdi.html'">About Shirdi</button>
+                              <button class="btn1" id="randomize">Sai Mandirs</button>
+                            </div>
+                          </div>
+            </div>
+        </div>
+
+  
+
+    <div class="container mb-4">
+            <div class="row">
+            <div id="charita"></div>
+            </div>
+
+    </div>
+
+    <!-- jQuery -->
+    <script src="js/jquery.min.js"></script>
+    <!-- jQuery Easing -->
+    <!-- Bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
+
+
+<script src="/js/pdfobject.min.js"></script>
+<script>PDFObject.embed("/charita.pdf", "#charita");</script>
+
+</body>
+
+</html>

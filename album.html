@@ -1,0 +1,258 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Om Sairam!</title>
+    <link rel="stylesheet" href="css/album.css">
+    <link href="css/lightbox.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+
+</head>
+
+<body style="background-color:rgb(22, 59, 56)">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-4@sm col-3@md"> &nbsp; </div>
+        </div>
+    </div>
+    <div class="container" style="background-color:#e95702">
+        <div class="row">
+            <div id="navbar" class="navbar-collapse collapse">
+
+
+                <a href="#" style="font-weight: 500; font-family:Geneva, Tahoma, sans-serif; color: #1207c2">
+                    <h1>The True Sai Works.</h1>
+                </a>
+
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+
+
+    <div class="container" style="background-color: goldenrod; border:wheat; border-style: solid; border-width: thick;">
+        <div class="row">
+            <div>
+                <div class="btn-group">
+                    <button class="btn1 active" id="prepend">Home</button>
+                    <button class="btn1" id="Charitra" onclick="location.href = 'saicharita.html';">Sai
+                        Charitra</button>
+                    <button class="btn1" id="remove" onclick="location.href = 'aboutshirdi.html';">About Shirdi</button>
+                    <button class="btn1" id="randomize">Sai Mandirs</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container">
+        <div class="row">
+
+            <div id="grid" class="row my-shuffle-container">
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="js/jquery.min.js"></script>
+    <!-- jQuery Easing -->
+    <!-- Bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/Shuffle.js"></script>
+    <script src="js/lightbox.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script>
+
+
+        var Shuffle = window.Shuffle;
+
+        class Demo {
+            constructor(element) {
+                this.element = element;
+                this.shuffle = new Shuffle(element, {
+                    itemSelector: '.picture-item',
+                    sizer: element.querySelector('.my-sizer-element')
+                });
+
+
+                // Log events.
+                this.addShuffleEventListeners();
+                this._activeFilters = [];
+                this.addFilterButtons();
+                this.addSorting();
+                this.addSearchFilter();
+            }
+
+            /**
+               * Shuffle uses the CustomEvent constructor to dispatch events. You can listen
+               * for them like you normally would (with jQuery for example).
+               */
+            addShuffleEventListeners() {
+                this.shuffle.on(Shuffle.EventType.LAYOUT, data => {
+                    var folder = "https://s3.ap-south-1.amazonaws.com/sai-images/";
+                    var thumbnailFolder = "https://s3.ap-south-1.amazonaws.com/sai-imagesresized/";
+
+                    $.ajax({
+                        url: folder,
+                        type: "GET",
+                        success: function (data) {
+                            console.log("data:" + data.getElementsByTagName("Key").length);
+                            $.each(data.getElementsByTagName("Key").reverse, function (i, val) {
+                                var thumbnailSrc = thumbnailFolder + "resized-" + val.textContent;
+                                var imgSrc = folder + val.textContent;
+                                if( val.textContent.match(/\.(jpe?g|png|gif)$/) ) { 
+                                var str = "<figure class='col-3@xs col-4@sm col-3@md picture-item' data-groups='['nature','city']' data-date-created='2015-10-20' data-title='Central Park'><div class='picture-item__inner'><div class='aspect aspect--16x9'><div class='aspect__inner'><a href='" + imgSrc + "' data-lightbox='image-1' data-title='My caption'><img src='" + thumbnailSrc + "' alt='Looking down on central park and the surrounding builds from the Rockefellar Center' /></div></div><div class='picture-item__details'><figcaption class='picture-item__title'><a href='https://unsplash.com/photos/utwYoEu9SU8' target='_blank' rel='noopener'>Central Park</a></figcaption><p class='picture-item__tags hidden@xs'>nature, city</p></div></div></figure>";
+                                $('.my-shuffle-container').append(str);
+                                }
+                            });
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log("Error Occurred: " + jqXHR.responseText);
+                        }
+                    });
+                });
+                this.shuffle.on(Shuffle.EventType.REMOVED, data => {
+                });
+            }
+
+            addFilterButtons() {
+                const options = document.querySelector('.filter-options');
+                if (!options) {
+                    return;
+                }
+
+                const filterButtons = Array.from(options.children);
+                const onClick = this._handleFilterClick.bind(this);
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', onClick, false);
+                });
+            }
+
+            _handleFilterClick(evt) {
+                const btn = evt.currentTarget;
+                const isActive = btn.classList.contains('active');
+                const btnGroup = btn.getAttribute('data-group');
+
+                this._removeActiveClassFromChildren(btn.parentNode);
+
+                let filterGroup;
+                if (isActive) {
+                    btn.classList.remove('active');
+                    filterGroup = Shuffle.ALL_ITEMS;
+                } else {
+                    btn.classList.add('active');
+                    filterGroup = btnGroup;
+                }
+
+                this.shuffle.filter(filterGroup);
+            }
+
+            _removeActiveClassFromChildren(parent) {
+                const { children } = parent;
+                for (let i = children.length - 1; i >= 0; i--) {
+                    if (window.CP.shouldStopExecution(0)) break;
+                    children[i].classList.remove('active');
+                } window.CP.exitedLoop(0);
+            }
+
+            addSorting() {
+                const buttonGroup = document.querySelector('.sort-options');
+                if (!buttonGroup) {
+                    return;
+                }
+                buttonGroup.addEventListener('change', this._handleSortChange.bind(this));
+            }
+
+            _handleSortChange(evt) {
+                // Add and remove `active` class from buttons.
+                const buttons = Array.from(evt.currentTarget.children);
+                buttons.forEach(button => {
+                    if (button.querySelector('input').value === evt.target.value) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                });
+
+                // Create the sort options to give to Shuffle.
+                const { value } = evt.target;
+                let options = {};
+
+                function sortByDate(element) {
+                    return element.getAttribute('data-created');
+                }
+
+                function sortByTitle(element) {
+                    return element.getAttribute('data-title').toLowerCase();
+                }
+
+                if (value === 'date-created') {
+                    options = {
+                        reverse: true,
+                        by: sortByDate
+                    };
+
+                } else if (value === 'title') {
+                    options = {
+                        by: sortByTitle
+                    };
+
+                }
+                this.shuffle.sort(options);
+            }
+
+            // Advanced filtering
+            addSearchFilter() {
+                const searchInput = document.querySelector('.js-shuffle-search');
+                if (!searchInput) {
+                    return;
+                }
+                searchInput.addEventListener('keyup', this._handleSearchKeyup.bind(this));
+            }
+
+            /**
+               * Filter the shuffle instance by items with a title that matches the search input.
+               * @param {Event} evt Event object.
+               */
+            _handleSearchKeyup(evt) {
+                const searchText = evt.target.value.toLowerCase();
+                this.shuffle.filter((element, shuffle) => {
+                    // If there is a current filter applied, ignore elements that don't match it.
+                    if (shuffle.group !== Shuffle.ALL_ITEMS) {
+                        // Get the item's groups.
+                        const groups = JSON.parse(element.getAttribute('data-groups'));
+                        const isElementInCurrentGroup = groups.indexOf(shuffle.group) !== -1;
+                        // Only search elements in the current group
+                        if (!isElementInCurrentGroup) {
+                            return false;
+                        }
+                    }
+                    const titleElement = element.querySelector('.picture-item__title');
+                    const titleText = titleElement.textContent.toLowerCase().trim();
+                    return titleText.indexOf(searchText) !== -1;
+                });
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.demo = new Demo(document.getElementById('grid'));
+        });
+
+    </script>
+
+    <script>
+
+
+
+    </script>
+
+</body>
+
+</html>
